@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Attach Ruby (rdbg)",
+      "type": "ruby",
+      "request": "attach",
+      "remoteHost": "127.0.0.1",
+      "remotePort": 12345
+    }
+  ]
+}
