@@ -15,7 +15,9 @@ class CartSerializer
           total_price: item.total_price
         }
       end,
-      total_price: @cart.total_price
+      total_price: @cart.total_price,
+      updated_at: @cart.updated_at,
+      abandoned_at: @cart.abandoned_at
     }
   end
 end

@@ -3,6 +3,19 @@ class Cart < ApplicationRecord
   has_many :cart_products, dependent: :destroy
   has_many :products, through: :cart_products
 
+  scope :active, -> { where(abandoned_at: nil) }
+  scope :inactive_for_3_hours, -> {
+    where(abandoned_at: nil)
+    .where("updated_at < ?", 3.hours.ago)
+  }  
+  scope :abandoned_for_7_days, -> {
+    where("abandoned_at < ?", 7.days.ago)
+  }
+
+  def mark_as_abandoned!
+        update!(abandoned_at: Time.current)
+  end
+
   def total_price
     cart_products.sum(&:total_price)
   end
@@ -19,6 +32,7 @@ class Cart < ApplicationRecord
     raise Carts::RemoveProduct::ProductNotInCart unless item
     item.destroy!
   end
+
   # TODO: lógica para marcar o carrinho como abandonado e remover se abandonado
 
 end

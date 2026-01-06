@@ -7,3 +7,11 @@
   - mailers
   - active_storage_analysis
   - active_storage_purge
+
+:scheduler:
+  :enabled: true
+  :schedule:
+    carts_cleanup:
+      cron: "* * * * *"   # a cada minuto, para teste
+      class: "Carts::CleanupJob"
+      queue: default
