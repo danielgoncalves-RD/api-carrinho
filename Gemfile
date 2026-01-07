@@ -16,10 +16,13 @@ gem 'guard-livereload', require: false
 
 gem 'sidekiq-cron'
 
+gem 'pry-byebug'
+gem 'pry-rails'
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'rspec-rails', '~> 6.1.0'
+  gem 'factory_bot_rails'
 end
 
 group :development do

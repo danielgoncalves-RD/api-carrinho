@@ -1,34 +1,22 @@
 module Carts
   class AddProduct
-    def self.call(session:,product_id:, quantity:)
-      new(session,product_id,quantity).call
+    def self.call(cart:,product_id:, quantity:)
+      new(cart,product_id,quantity).call
     end
 
-    def initialize(session, product_id,quantity)
-      @session = session
+    def initialize(cart, product_id,quantity)
+      @cart = cart
       @product_id = product_id
       @quantity = quantity.to_i
     end
 
     def call
-      ActiveRecord::Base.transaction do
-        cart = find_or_create_cart
+      ActiveRecord::Base.transaction do       
         product = Product.find(@product_id)
-
-        cart.add_product(product,@quantity)
-
-        cart
+        @cart.add_product(product,@quantity)
+        @cart.touch_interaction!                
       end
     end
-
-    private
-
-    def find_or_create_cart
-      return Cart.find(@session[:cart_id]) if @session[:cart_id]
-
-      cart = Cart.create!
-      @session[:cart_id] = cart.id
-      cart
-    end
+      
   end
 end

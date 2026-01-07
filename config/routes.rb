@@ -7,7 +7,7 @@ Rails.application.routes.draw do
 
   root "rails/health#show"
   resource :cart, only: [:show,:create] do
-        post :add_product
+        post :add_item
         delete ':product_id', action: :remove_product
   end
 end

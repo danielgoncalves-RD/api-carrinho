@@ -16,6 +16,8 @@ module Carts
       ActiveRecord::Base.transaction do
         cart = find_cart!        
         cart.remove_product_by_id(@product_id)
+        cart.touch_interaction!
+        
         cart
       end
     end

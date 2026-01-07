@@ -6,13 +6,17 @@ class Cart < ApplicationRecord
   scope :active, -> { where(abandoned_at: nil) }
   scope :inactive_for_3_hours, -> {
     where(abandoned_at: nil)
-    .where("updated_at < ?", 3.hours.ago)
+    .where("last_interaction_at < ?", 3.hours.ago)
   }  
   scope :abandoned_for_7_days, -> {
     where("abandoned_at < ?", 7.days.ago)
   }
 
-  def mark_as_abandoned!
+  def abandoned?
+    abandoned_at.present?
+  end
+
+  def mark_as_abandoned
         update!(abandoned_at: Time.current)
   end
 
@@ -21,6 +25,7 @@ class Cart < ApplicationRecord
   end
 
   def add_product(product, quantity)
+    quantity = quantity.to_i
     item = cart_products.find_or_initialize_by(product: product)
     item.quantity ||= 0
     item.quantity += quantity
@@ -33,6 +38,15 @@ class Cart < ApplicationRecord
     item.destroy!
   end
 
-  # TODO: lógica para marcar o carrinho como abandonado e remover se abandonado
+  def remove_if_abandoned
+    return unless abandoned?
+    return unless last_interaction_at <= 7.days.ago
+
+    destroy!
+  end
+
+  def touch_interaction!
+    update!(last_interaction_at: Time.current)
+  end
 
 end

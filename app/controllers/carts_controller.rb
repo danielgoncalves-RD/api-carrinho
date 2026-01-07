@@ -1,6 +1,6 @@
 class CartsController < ApplicationController
   def create
-    add_product
+    add_item
   end  
   
   def show
@@ -8,14 +8,24 @@ class CartsController < ApplicationController
         render json: CartSerializer.new(cart).as_json, status: :ok
   end
 
-  def add_product
-    cart = Carts::AddProduct.call(
-      session: session,
+  def add_item        
+    cart =
+      if session[:cart_id]        
+        Cart.find(session[:cart_id])
+      else         
+        Cart.last
+      end
+
+    cart ||= Cart.create!
+    session[:cart_id] ||= cart.id
+
+    Carts::AddProduct.call(
+      cart: cart,
       product_id: params[:product_id],
       quantity: params[:quantity]
-    )
+    )    
 
-    render json: CartSerializer.new(cart).as_json, status: :ok
+    render json: CartSerializer.new(cart).as_json
   end
  
   def remove_product
