@@ -14,9 +14,12 @@ class Cart
 
   scope :active, -> { where(abandoned_at: nil) }
   scope :inactive_for_3_hours, lambda {
-    where(abandoned_at: nil)
-      .where.not(last_interaction_at: 'alguma coisa')
+    where(
+      abandoned_at: nil,
+      :last_interaction_at.lt => 3.hours.ago
+    )
   }
+
   scope :abandoned_for_7_days, lambda {
     where(:abandoned_at.lt => 7.days.ago)
   }
