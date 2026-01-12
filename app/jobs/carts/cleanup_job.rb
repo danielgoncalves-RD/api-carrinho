@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# Job responsável por gerenciar status do carrinho
 module Carts
   class CleanupJob < ApplicationJob
     queue_as :default
@@ -10,14 +13,11 @@ module Carts
     private
 
     def mark_abandoned_carts
-      Cart.inactive_for_3_hours.find_each do |cart|
-        cart.mark_as_abandoned!
-      end
+      Cart.inactive_for_3_hours.find_each(&:mark_as_abandoned!)
     end
 
     def remove_old_abandoned_carts
       Cart.abandoned_for_7_days.find_each(&:destroy!)
     end
-
   end
 end

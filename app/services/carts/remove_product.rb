@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Carts
   class RemoveProduct
     class ProductNotInCart < StandardError; end
@@ -13,21 +15,18 @@ module Carts
     end
 
     def call
-      ActiveRecord::Base.transaction do
-        cart = find_cart!        
-        cart.remove_product_by_id(@product_id)
-        cart.touch_interaction!
-        
-        cart
-      end
+      cart = find_cart!
+      cart.remove_product_by_id(@product_id)
+      cart.touch_interaction!
+      cart
     end
 
     private
 
     def find_cart!
       raise CartNotFound unless @session[:cart_id]
+
       Cart.find(@session[:cart_id])
     end
-
   end
 end

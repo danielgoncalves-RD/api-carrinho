@@ -1,33 +1,46 @@
-version: '3'
+version: "3.9"
 
 services:
-    db:
-        image: postgres:16-alpine
-        environment:
-          - POSTGRES_USER=postgres
-          - POSTGRES_PASSWORD=password
-        ports:
-            - '5432:5432'
-        volumes:
-            - postgres13:/var/lib/postgresql/data
-    redis:
-        image: redis:7.0.15-alpine
-        ports:
-        - '6379:6379'
-        volumes:
-        - redis_data:/data  
-    web:
-        ## TODO
-    test:
-        build: .
-        command: bundle exec rspec
-        volumes:
-            - .:/rails
-        depends_on:
-            - db
-            - redis 
-        environment:
-            - DATABASE_URL: postgresql://postgres:password@db:5432/myapp_test
-            - REDIS_URL: redis://redis:6379/0
+  mongo:
+    image: mongo:7
+    container_name: store_mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7-alpine
+    container_name: store_redis
+  
+  web:
+    build: .
+    container_name: store_api
+    command: bash -c "rm -f tmp/pids/server.pid && bin/rails server -b 0.0.0.0"
+    volumes:
+      - .:/rails
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/store_development
+      REDIS_URL: redis://redis:6379/0
+
+  test:
+    build: .
+    container_name: store_test
+    command: bundle exec rspec
+    volumes:
+      - .:/rails
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      MONGODB_URI: mongodb://mongo:27017/store_test
+      REDIS_URL: redis://redis:6379/1
+      RAILS_ENV: test
+
 volumes:
-    postgres13:
+  mongo_data:

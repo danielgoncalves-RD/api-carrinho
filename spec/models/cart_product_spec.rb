@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe CartProduct, type: :model do
-  let(:product) { Product.create!(name: "Produto", price: 10.0) }
+  let(:product) { Product.create!(name: 'Produto', price: 10.0) }
   let(:cart) { Cart.create! }
 
   subject do

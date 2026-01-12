@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Carts
   class Show
     def self.call(session:)
